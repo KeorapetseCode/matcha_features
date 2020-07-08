@@ -1,0 +1,79 @@
+<head>
+            <script src="/javascript/search_match.js"></script>
+            
+            <link rel="stylesheet" type="text/css" href="/stylesheets/search_match.css">
+            <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+<div class="header">
+	<a href="#default" class="logo"><img id="profile_pic" src=<%=user.profile_pic%>></a>
+	<div class="header-right">
+		<a  href="/">Home</a>
+		<a href="/My_pictures">My Pictures</a>
+		<a class="active" href="/search_match">Find Your Match</a>
+		<a href="/settings">Settings</a>
+		<a href="/logout">Log out</a>
+	</div>
+</div>
+<div class="main">
+    <%
+    	if (user.complete == 0){
+    %>
+    <h1 id="not_complete">Your Profile is incomplete, most features will be locked. Got to the settings page to complete your profile. When you reach the settings page,<br>
+            1. Complete the form where it says additional information</h1>
+        <br>
+        <a href="/settings"><button style="height: 30px; width: 300px; font-size: 20px; text-align: center; border-radius: 10px 10px; border: 3px solid gold;">Click Here to go to settings</button></a>
+        <%
+        }
+        else{
+        %>
+            <h1 id="pagetitle">Find your match</h2>
+            <%
+                var x = 0;
+                var like_click = [];
+                var like_status = 1;
+                   function btnfunc(){
+					    console.log("In the rrere");
+					}
+                while (results[x]) {
+                	like_click[x] = 0;
+                	var match_username = results[x].username;
+					let match_age = results[x].Age;
+					let match_orientation = results[x].Orientation;
+					let match_like = results[x].likes;
+					let match_bio = results[x].Bio;
+					let match_profilepic = results[x].profile_pic;
+			%>
+					<div class="result_div">
+						<img src=<%=match_profilepic%> width="300px" height="300px">
+						<form method="POST" id="like_form" action="/search_match">
+							<br>
+							<h2 id="label_username">Username: <%=match_username%></h2>
+							<input type="hidden" id="username_plc" name="username" value="<%=match_username%>"
+							<br>
+							<h2 id="label_age">Age: <%=match_age%></h2>
+							<h2 id="label_orientation">Orientation: <%=match_orientation%></h2>
+							<%
+							if (match_like) {
+							%>
+								<h2 id="label_likes">Likes: <br> <%=match_like%></h2>
+
+							<% } %>
+							<h2 id="label_bio">Biography: <br> <%=match_bio%></h2>
+							<%
+								if (like_click[x] == 0){
+									%>
+									<input type="submit" id="like_btn" value="Like" name="likeType">		
+								<% }
+								else if (like_click[x] == 1){
+									%>
+									<input type="submit" id="like_btn" value="Unlike" name="likeType">
+								<% }
+								 %>
+						</form>
+					</div>
+            	<% x++; }
+		}
+	%>
+</div>
+</body>
