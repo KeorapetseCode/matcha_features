@@ -64,7 +64,12 @@ router.get('/', (req, res) => {
 
 //                                   ----------------------All blank------------------------------
                 if (rows1[0].Age == "None" && rows1[0].Fame_rating == "None" && rows1[0].Hobby1 == "None" && rows1[0].Hobby2 == "None") {
-                    connection.query("SELECT `users`.`username`,`users`.`last_seen`,`users`.`Gender`,`users`.`Firstname`,`users`.`fame_rating`, `users`.`Lastname`, `users`.`Age`, `users`.`Orientation`, `users`.`Bio`, `users`.`profile_pic`,`users`.`Latitude`, `users`.`Longitude`, `user_hobbies`.`Hobby1`, `user_hobbies`.`Hobby2`, `user_hobbies`.`Hobby3`, `user_hobbies`.`Hobby4`, `user_hobbies`.`Hobby5` FROM `users` INNER JOIN `user_hobbies` ON `users`.`username` = `user_hobbies`.`username` WHERE `users`.`username` != ? ORDER BY `users`.`fame_rating` DESC", [req.session.user], (err, users) => {
+                    connection.query("SELECT `users`.`username`,`users`.`last_seen`,`users`.`Gender`,`users`.`Firstname`,`users`.`fame_rating`,"+
+                                    "`users`.`Lastname`, `users`.`Age`, `users`.`Orientation`, `users`.`Bio`, `users`.`profile_pic`,"+
+                                    "`users`.`Latitude`, `users`.`Longitude`, `user_hobbies`.`Hobby1`, `user_hobbies`.`Hobby2`,"+
+                                    "`user_hobbies`.`Hobby3`, `user_hobbies`.`Hobby4`, `user_hobbies`.`Hobby5` FROM `users` INNER JOIN"+
+                                    " `user_hobbies` ON `users`.`username` = `user_hobbies`.`username` WHERE `users`.`username` != ? ORDER BY"+
+                                    " `users`.`fame_rating` DESC", [req.session.user], (err, users) => {
                         if (err)
                             console.log(err);
                         else {
@@ -113,7 +118,7 @@ router.get('/', (req, res) => {
                 }
 //--------------------------------------------------Age Only-------------------------------------
 
-                else if (rows1[0].Age != "None" && rows1[0].Fame_rating == "None" && rows1[0].Hobby1 == "None" && rows1[0].Hobby2 == "None") {
+                else if (rows1[0].Age != "None" && rows1[0].Fame_rating == "None") {
                     if (rows1[0].Age == "18-19") {
                         age_min = 18;
                         age_max = 19;
@@ -146,13 +151,12 @@ router.get('/', (req, res) => {
                         age_min = 50;
                         age_max = 70;
                     }
-                    connection.query("SELECT `users`.`username`,`users`.`last_seen`,`users`.`Gender`, `users`.`Firstname`, "+
-                                    "`users`.`fame_rating`, `users`.`Lastname`, `users`.`Age`, `users`.`Orientation`, "+
-                                    "`users`.`Bio`, `users`.`profile_pic`, `user_hobbies`.`Hobby1`, `user_hobbies`.`Hobby2`, "+
-                                    "`user_hobbies`.`Hobby3`, `user_hobbies`.`Hobby4`, `user_hobbies`.`Hobby5`, "+
-                                    " FROM `users` INNER JOIN `user_hobbies` ON `users`.`username` = `user_hobbies`.`username`"+
-                                    " WHERE `users`.`username` != ? AND `users`.`Age` >= ? AND `users`.`Age` <= ?"+
-                                    " ORDER BY `users`.`fame_rating` DESC", [req.session.user, age_min, age_max], (err, users) => {
+                    connection.query("SELECT `users`.`username`,`users`.`last_seen`,`users`.`Gender`,`users`.`Firstname`,`users`.`fame_rating`,"+
+                                    "`users`.`Lastname`,`users`.`Age`,`users`.`Orientation`,`users`.`Bio`,`users`.`profile_pic`,"+
+                                    "`user_hobbies`.`Hobby1`,`user_hobbies`.`Hobby2`,`user_hobbies`.`Hobby3`,`user_hobbies`.`Hobby4`,"+
+                                    "`user_hobbies`.`Hobby5` FROM `users` INNER JOIN `user_hobbies` ON `users`.`username` = `user_hobbies`.`username` "+
+                                    "WHERE `users`.`username` != ? AND `users`.`Age` >= ? AND `users`.`Age` <= ? ORDER BY `users`.`fame_rating` DESC",
+                                    [req.session.user, age_min, age_max], (err, users) => {
                         if (err)
                             console.log(err);
                         else {
@@ -234,6 +238,8 @@ router.get('/', (req, res) => {
                                     console.log("Couldn't fetch usersE");
                                 }
                                 else {
+                                    var users = resultJoin(usersA, usersB);
+                                    
                                     req.session.search_results_backup = users;
                             
                                     var x = 0;
