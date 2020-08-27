@@ -1,79 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-            <script src="/javascript/search_match.js"></script>
-            
-            <link rel="stylesheet" type="text/css" href="/stylesheets/search_match.css">
-            <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/nav.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/search_match.css">
 </head>
-<body>
-<div class="header">
-	<a href="#default" class="logo"><img id="profile_pic" src=<%=user.profile_pic%>></a>
-	<div class="header-right">
-		<a  href="/">Home</a>
-		<a href="/My_pictures">My Pictures</a>
-		<a class="active" href="/search_match">Find Your Match</a>
-		<a href="/settings">Settings</a>
-		<a href="/logout">Log out</a>
-	</div>
-</div>
-<div class="main">
-    <%
-    	if (user.complete == 0){
-    %>
-    <h1 id="not_complete">Your Profile is incomplete, most features will be locked. Got to the settings page to complete your profile. When you reach the settings page,<br>
-            1. Complete the form where it says additional information</h1>
-        <br>
-        <a href="/settings"><button style="height: 30px; width: 300px; font-size: 20px; text-align: center; border-radius: 10px 10px; border: 3px solid gold;">Click Here to go to settings</button></a>
-        <%
-        }
-        else{
-        %>
-            <h1 id="pagetitle">Find your match</h2>
+<body onload="login()">
+    <input type="hidden" value=<%=user.username %> id='me'>
+    <span id="notification-toggle">
+      <a href="javacript:void(0)" onclick="displayNotifications()">notifications</a>
+    </span>
+    <div id="notification-bar"></div>
+    <nav>
+        <div id="main_menu">
+            <a href="/">home</a>
+            <a href="/chats">chats</a>
+            <a href="/connection_requests">requests</a>
+            <a href="/search_match">search</a>
+            <a href="javascript:void(0);" onclick="userSubMenu()">
+                <img id="profile_pic" src=<%=user.profile_pic%>  alt="sub_menu">
+            </a>
+        </div>
+        <div id="user_sub_menu">
+            <a href="javascript:void(0);" onclick="userSubMenu()">
+                <img id="profile_pic" src=<%=user.profile_pic%> alt="sub_menu">
+            </a>
+            <a href="/profile_views">profile views</a>
+            <a href="/My_pictures">my pics</a>
+            <a href="/settings">settings</a>
+            <a href="/logout">logout</a>
+        </div>
+      </nav>
+      <main>
+        <h1>find your match</h2>
+        <form id="filter_form" method="POST" action="/search_match">
+            <div class="filters">
+                <label for="filter1">filter by Age</label>
+                <select name="filter1" class="filter_inputs" >
+                    <option value="None">None</option>
+                    <option value="18-19">18 to 19</option>
+                    <option value="20-25">20 to 25</option>
+                    <option value="25-30">25 to 30</option>
+                    <option value="30-35">30 to 35</option>
+                    <option value="35-40">35 to 40</option>
+                    <option value="40-45">40 to 45</option>
+                    <option value="45-50">45 to 50</option>
+                    <option value="50-older">50 and older</option>
+                </select>
+            </div>
+            <div class="filters">
+                <label for="filter2">Filter By Popularity</label>
+                <select name="filter2" class="filter_inputs">
+                    <option value="None">None</option>
+                    <option value="0-10">0 to 10</option>
+                    <option value="11-50">11 to 50</option>
+                    <option value="51-100">51 to 100</option>
+                    <option value="100-Above">101 and above</option>
+                </select>
+            </div>
+            <div class="filters">
+                <label for="filter3">filter by hobby</label>
+                <input class="filter_inputs" type="text" name="filter3" value="None">
+                <input class="filter_inputs" type="text" name="filter4" value="None">
+            </div>
+            <button type="submit" id="filter_submit" tabindex="11">search with filters</button>
+        </form>
+        
+        <div class="all_results">
             <%
                 var x = 0;
-                var like_click = [];
-                var like_status = 1;
-                   function btnfunc(){
-					    console.log("In the rrere");
-					}
                 while (results[x]) {
-                	like_click[x] = 0;
-                	var match_username = results[x].username;
-					let match_age = results[x].Age;
-					let match_orientation = results[x].Orientation;
-					let match_like = results[x].likes;
-					let match_bio = results[x].Bio;
-					let match_profilepic = results[x].profile_pic;
-			%>
-					<div class="result_div">
-						<img src=<%=match_profilepic%> width="300px" height="300px">
-						<form method="POST" id="like_form" action="/search_match">
-							<br>
-							<h2 id="label_username">Username: <%=match_username%></h2>
-							<input type="hidden" id="username_plc" name="username" value="<%=match_username%>"
-							<br>
-							<h2 id="label_age">Age: <%=match_age%></h2>
-							<h2 id="label_orientation">Orientation: <%=match_orientation%></h2>
-							<%
-							if (match_like) {
-							%>
-								<h2 id="label_likes">Likes: <br> <%=match_like%></h2>
+                    let match_username = results[x].username;
+                    let match_fame_rating = results[x].fame_rating;
+                    let match_firstname = results[x].Firstname;
+                    let match_lastname = results[x].Lastname;
+                    let match_age = results[x].Age;
+                    let match_orientation = results[x].Orientation;
+                    let match_gender = results[x].Gender;
+                    let match_bio = results[x].Bio;
+                    let match_profilepic = results[x].profile_pic;
+                    let match_hobby1 = results[x].Hobby1;
+                    let match_hobby2 = results[x].Hobby2;
+                    let match_hobby3 = results[x].Hobby3;
+                    let match_hobby4 = results[x].Hobby4;
+                    let match_hobby5 = results[x].Hobby5;
+                    let match_distance = distance[x];
+                    let match_last_seen = results[x].last_seen;
+            %>
+            <div class="result_div">
+                <img class="match_pic" src=<%=match_profilepic%>>
+                <div class="match_details">
+                    <span class="match">username: <%=match_username%></span>
+                    <span class="match_rating">fame rating <%=match_fame_rating%></span>
+                    <span class="match_age">age: <%=match_age%></span>
+                    <span class="match_orientation">sexual preference: <%=match_orientation%></span>
+                    <span class="label_bio">biography: <%=match_bio%></span>
+                    <hr>
+                    <span class="label_bio">interests</span>
+                    <hr>
+                    <span class="label_bio">
+                        <%=match_hobby1%>, <%=match_hobby2%>, <%=match_hobby3%>
+                        , <%=match_hobby4%>, <%=match_hobby5%>
+                    </span>
+                    <hr>
+                    <span class="match_distance">distance from me {no yet working}</span>
+                </div> 
 
-							<% } %>
-							<h2 id="label_bio">Biography: <br> <%=match_bio%></h2>
-							<%
-								if (like_click[x] == 0){
-									%>
-									<input type="submit" id="like_btn" value="Like" name="likeType">		
-								<% }
-								else if (like_click[x] == 1){
-									%>
-									<input type="submit" id="like_btn" value="Unlike" name="likeType">
-								<% }
-								 %>
-						</form>
-					</div>
-            	<% x++; }
-		}
-	%>
-</div>
+                <form action="/match_full_info" method="POST">
+                    <input type="hidden" name="match_username" value=<%=match_username%>>
+                    <input type="hidden" name="match_fame_rating" value=<%=match_fame_rating%>>
+                    <input type="hidden" name="match_firstname" value=<%=match_firstname%>>
+                    <input type="hidden" name="match_lastname" value=<%=match_lastname%>>
+                    <input type="hidden" name="match_age" value=<%=match_age%>>
+                    <input type="hidden" name="match_orientation" value=<%=match_orientation%>>
+                    <input type="hidden" name="match_gender" value=<%=match_gender%>>
+                    <input type="hidden" name="match_bio" value=<%=match_bio%>>
+                    <input type="hidden" name="match_profilepic" value=<%=match_profilepic%>>
+                    <input type="hidden" name="match_hobby1" value=<%=match_hobby1%>>
+                    <input type="hidden" name="match_hobby2" value=<%=match_hobby2%>>
+                    <input type="hidden" name="match_hobby3" value=<%=match_hobby3%>>
+                    <input type="hidden" name="match_hobby4" value=<%=match_hobby4%>>
+                    <input type="hidden" name="match_hobby5" value=<%=match_hobby5%>>
+                    <input type="hidden" name="match_last_seen" value=<%=match_last_seen%>>
+                    <input type="hidden" name="match_distance" value=<%=match_distance%>>
+                    <button type="submit" id="view_btn">View Profile</button>
+                </form>
+            </div>
+
+            <%      x++;
+                } %>
+        </div>
+      </main>
+
+      <footer>
+          <a href="#">matcha dating web application</a>
+      </footer>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="javascripts/notification.js"></script>
+      <script src="javascripts/nav.js"></script>
 </body>
+</html>
